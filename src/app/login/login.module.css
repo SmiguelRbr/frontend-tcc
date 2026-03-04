@@ -1,0 +1,115 @@
+/* src/app/login/login.module.css */
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: var(--background);
+  color: var(--foreground);
+  padding: 20px;
+  font-family: sans-serif;
+  position: relative;
+}
+
+.card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+  padding: 2.5rem;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+  font-size: 1.75rem;
+  margin-bottom: 0.5rem;
+  text-align: center;
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.subtitle {
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--foreground);
+  opacity: 0.7;
+  margin-bottom: 2rem;
+}
+
+.formGroup {
+  margin-bottom: 1.25rem;
+}
+
+.label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.input {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background-color: var(--background);
+  color: var(--foreground);
+  outline: none;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+/* --- NOVO: Cor Neutra para o Login --- */
+.inputNeutral:focus {
+  border-color: #64748b; /* Cinza Ardósia */
+  box-shadow: 0 0 0 2px rgba(100, 116, 139, 0.2);
+}
+
+.button {
+  width: 100%;
+  padding: 0.9rem;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: filter 0.2s;
+}
+
+/* --- NOVO: Botão Neutro --- */
+.buttonNeutral {
+  background-color: #64748b; /* Cinza Ardósia */
+}
+
+.button:hover:not(:disabled) {
+  filter: brightness(1.1);
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.registerLink {
+  margin-top: 1.5rem;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+/* --- NOVO: Link Neutro --- */
+.registerLink a {
+  color: #64748b; 
+  font-weight: bold;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.registerLink a:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
