@@ -1,0 +1,343 @@
+/* src/app/dashboard/dashboard.module.css */
+
+.wrapper {
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--background); /* Redundância segura */
+  overflow-x: hidden; 
+}
+
+.container {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 2rem;
+  color: var(--foreground);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.bentoGrid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 1.5rem;
+}
+
+.heroBlock { grid-column: span 12; display: flex; align-items: center; justify-content: space-between; position: relative; padding: 3rem 2rem !important; }
+.kpiBlock { grid-column: span 12; }
+@media (min-width: 768px) { .kpiBlock { grid-column: span 4; } }
+.chartBlock { grid-column: span 12; height: 420px; }
+@media (min-width: 1024px) { .chartBlock { grid-column: span 8; } }
+.sideBlock { grid-column: span 12; max-height: 420px; overflow-y: auto; }
+@media (min-width: 1024px) { .sideBlock { grid-column: span 4; } }
+.fullBlock { grid-column: span 12; }
+
+.card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px; 
+  padding: 1.5rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  transition: border-color 0.2s ease;
+}
+
+.card:hover {
+  border-color: rgba(16, 185, 129, 0.5); 
+}
+
+.cardTitle {
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--foreground);
+  opacity: 0.7;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.heroTitle {
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5rem;
+  position: relative;
+  z-index: 2;
+}
+
+.heroSubtitle {
+  font-size: 1rem;
+  opacity: 0.6;
+  position: relative;
+  z-index: 2;
+}
+
+.kpiValue {
+  font-size: 2.5rem;
+  font-weight: 600;
+  /* Removi o monospace que estava feio. Agora usa um sans-serif forte e moderno */
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: var(--foreground);
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.profGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.profCard {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+.profCard:hover {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+.profAvatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 6px; 
+  background-color: var(--toggle-bg);
+  color: var(--primary-prof);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+
+.btnPrimary {
+  background-color: var(--foreground);
+  color: var(--background);
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btnPrimary:hover { opacity: 0.8; }
+
+.btnOutline {
+  background-color: transparent;
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btnOutline:hover {
+  border-color: var(--primary-prof);
+  color: var(--primary-prof);
+}
+
+.sideBlock::-webkit-scrollbar { display: none; }
+
+/* --- CSS DO MODAL DE MEDIDAS --- */
+.modalOverlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 50;
+}
+
+.modalContent {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  width: 100%;
+  max-width: 400px;
+  padding: 2rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.inputGroup {
+  margin-bottom: 1.5rem;
+}
+
+.inputGroup label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  opacity: 0.8;
+}
+
+.inputField {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: var(--background);
+  border: 1px solid var(--border);
+  color: var(--foreground);
+  border-radius: 4px;
+  outline: none;
+}
+
+.inputField:focus {
+  border-color: var(--primary-aluno);
+}
+
+/* --- CSS DO MODAL DE MEDIDAS (ATUALIZADO) --- */
+.modalOverlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 50;
+  padding: 1rem;
+}
+
+.modalContent {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  width: 100%;
+  max-width: 650px; /* Modal mais largo para caber as grelhas */
+  max-height: 90vh; /* Se a tela for pequena, ele rola internamente */
+  overflow-y: auto;
+  padding: 2.5rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* Grelhas para organizar os inputs */
+.modalGrid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+.modalGrid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+
+.inputGroup { margin-bottom: 1.5rem; }
+.inputGroup label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  opacity: 0.7;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.inputField {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: var(--background);
+  border: 1px solid var(--border);
+  color: var(--foreground);
+  border-radius: 4px;
+  outline: none;
+  font-family: inherit;
+}
+.inputField:focus { border-color: var(--primary-aluno); }
+
+/* Campo de notas (Textarea) */
+.textareaField {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: var(--background);
+  border: 1px solid var(--border);
+  color: var(--foreground);
+  border-radius: 4px;
+  outline: none;
+  resize: vertical;
+  min-height: 80px;
+  font-family: inherit;
+}
+.textareaField:focus { border-color: var(--primary-aluno); }
+
+/* Estilo para os inputs de ficheiro (Fotos) */
+.fileInput { width: 100%; font-size: 0.8rem; color: var(--foreground); }
+.fileInput::file-selector-button {
+  background-color: var(--border);
+  color: var(--foreground);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  margin-right: 1rem;
+  font-weight: 600;
+}
+.fileInput::file-selector-button:hover { opacity: 0.8; }
+
+/* --- ADICIONA ISTO AO TEU CSS EXISTENTE --- */
+
+/* Transforma o item do histórico num botão clicável */
+.historyItem {
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  padding: 0.8rem 0.5rem; /* Um pouco mais de padding horizontal */
+  border-bottom: 1px solid var(--border);
+  cursor: pointer; /* Muda o cursor para a mãozinha */
+  transition: background-color 0.2s, padding-left 0.2s;
+  border-radius: 4px;
+}
+
+.historyItem:hover {
+  background-color: rgba(255, 255, 255, 0.03);
+  padding-left: 1rem; /* Efeito subtil de avançar para a direita no hover */
+}
+
+/* Grelha para as fotos do histórico */
+.photoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.photoBox {
+  width: 100%;
+  aspect-ratio: 3/4; /* Formato retrato para fotos de corpo */
+  background-color: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.photoImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Garante que a foto preenche o espaço sem distorcer */
+}
+
+.detailLabel {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  opacity: 0.6;
+  margin-bottom: 0.2rem;
+}
+
+.detailValue {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
