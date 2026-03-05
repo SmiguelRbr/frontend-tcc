@@ -40,7 +40,7 @@ export default function Login() {
 
             // Lógica de sucesso (ex: salvar token no localStorage/cookies)
 
-            router.push('/');
+            router.push('/dashboard');
 
         } catch (error) {
             if (error.response?.status === 422 && error.response.data.errors) {

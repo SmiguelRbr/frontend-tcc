@@ -211,7 +211,10 @@ export default function Dashboard() {
                     {/* HISTÓRICO */}
                     <motion.div variants={itemVariants} className={`${styles.card} ${styles.sideBlock}`}>
                         <div className={styles.cardTitle}>Últimos Registos</div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                        <div style={{
+                            display: 'flex', flexDirection: 'column', gap: '0.5rem', overflowY: 'auto',
+                            paddingRight: '5px'
+                        }}>
                             {data.history.map(item => (
                                 <div
                                     key={item.id}

@@ -23,6 +23,8 @@ export default function OnboardingPage() {
     registroProfissional: '', // CRN/CREF
     bio: ''
   });
+  const [alturaError, setAlturaError] = useState('');
+
 
   // Busca a role no localStorage assim que a página carrega
   useEffect(() => {
@@ -40,13 +42,55 @@ export default function OnboardingPage() {
   const themeClass = isProfessional ? styles.inputProf : styles.inputAluno;
   const buttonClass = isProfessional ? styles.buttonProf : styles.buttonAluno;
 
+  // helper para normalizar o valor de altura
+  const formatHeight = (value) => {
+    if (value == null) return '';
+    // transforma vírgula em ponto e remove caracteres inválidos
+    value = value.replace(',', '.').replace(/[^0-9.]/g, '');
+
+    // se já tiver ponto, limita a duas casas decimais
+    if (value.includes('.')) {
+      const [intPart, decPart] = value.split('.');
+      return intPart + (decPart ? '.' + decPart.slice(0, 2) : '');
+    }
+
+    // sem ponto: quando o usuário digitar mais de 2 dígitos, insere ponto antes dos dois últimos
+    if (value.length > 2) {
+      const intPart = value.slice(0, -2);
+      const decPart = value.slice(-2);
+      return intPart + '.' + decPart;
+    }
+
+    return value;
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    let newValue = value;
+
+    if (name === 'altura') {
+      newValue = formatHeight(value);
+      const numeric = parseFloat(newValue);
+      if (!newValue || isNaN(numeric)) {
+        setAlturaError('Digite uma altura válida');
+      } else if (numeric < 0.5 || numeric > 3) {
+        setAlturaError('Altura deve estar entre 0.50m e 3.00m');
+      } else {
+        setAlturaError('');
+      }
+    }
+
+    setFormData((prev) => ({ ...prev, [name]: newValue }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (alturaError) {
+      toast.error('Corrija a altura antes de continuar.');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -136,8 +180,8 @@ export default function OnboardingPage() {
                 <div className={`${styles.formGroup} ${styles.col}`}>
                   <label className={styles.label}>Altura (m)</label>
                   <input 
-                    type="number" 
-                    step="0.01" 
+                    type="text" 
+                    inputMode="decimal"
                     placeholder="1.75"
                     name="altura" 
                     className={`${styles.input} ${themeClass}`}
@@ -145,6 +189,9 @@ export default function OnboardingPage() {
                     onChange={handleChange} 
                     required
                   />
+                  {alturaError && (
+                    <span className={styles.errorText}>{alturaError}</span>
+                  )}
                 </div>
                 <div className={`${styles.formGroup} ${styles.col}`}>
                   <label className={styles.label}>Peso (kg)</label>
