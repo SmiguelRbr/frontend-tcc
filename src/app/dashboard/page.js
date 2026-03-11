@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation'; // <-- 1. IMPORTAMOS O ROUTER AQUI
 import { motion, AnimatePresence } from 'framer-motion';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { Scale, TrendingDown, Activity, Plus, Briefcase, ChevronRight, X } from 'lucide-react';
@@ -10,6 +11,8 @@ import styles from './dashboard.module.css';
 import Hero3D from '../components/Hero3D';
 
 export default function Dashboard() {
+    const router = useRouter(); // <-- 2. INICIALIZAMOS O ROUTER AQUI
+
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState({ overview: null, chart: [], history: [], recommendations: [], activePlans: [] });
 
@@ -29,20 +32,16 @@ export default function Dashboard() {
                 api.get('/dashboard/evolution'),
                 api.get('/measurements'),
                 api.get('/dashboard/recommendations').catch(() => ({ data: [] })),
-                api.get('/dashboard/active-plans').catch(() => ({ data: [] }))
+                api.get('/my-plan').catch(() => ({ data: [] })) // Mantive a tua correção aqui para /my-plan
             ]);
-
-            // Debug: Abre o F12 e vê se os pesos no 'data' são diferentes!
-            console.log("Dados do Laravel:", evoRes.data.chart);
 
             const labels = evoRes.data.chart?.labels || [];
             const values = evoRes.data.chart?.data || [];
 
-            // Mapeamos garantindo que pegamos o valor exato de cada índice
             const chartData = labels.map((label, index) => ({
                 name: label,
                 peso: Number(values[index]),
-                id: index // Chave única para o Tooltip não bugar
+                id: index
             }));
 
             setData({
@@ -61,20 +60,17 @@ export default function Dashboard() {
 
     useEffect(() => { fetchData(); }, []);
 
-    // Lógica de submissão da nova medida
     const handleFileChange = (e, field) => {
         setForm(prev => ({ ...prev, [field]: e.target.files[0] }));
     };
 
-    // Lógica de submissão usando FormData (Obrigatório para imagens)
     const submitMeasurement = async (e) => {
         e.preventDefault();
-        setLoading(true); // Opcional: mostrar loading enquanto envia imagens
+        setLoading(true);
 
         const formData = new FormData();
         formData.append('peso', form.peso);
 
-        // Adiciona apenas se o utilizador tiver preenchido (são nullable no teu backend)
         if (form.waist_cm) formData.append('waist_cm', form.waist_cm);
         if (form.hips_cm) formData.append('hips_cm', form.hips_cm);
         if (form.chest_cm) formData.append('chest_cm', form.chest_cm);
@@ -85,7 +81,6 @@ export default function Dashboard() {
         if (form.photo_back) formData.append('photo_back', form.photo_back);
 
         try {
-            // O header 'multipart/form-data' é essencial para o Laravel perceber as imagens
             await api.post('/measurements', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
@@ -93,7 +88,7 @@ export default function Dashboard() {
             toast.success('Avaliação física registada com sucesso!');
             setIsModalOpen(false);
             setForm({ peso: '', waist_cm: '', hips_cm: '', chest_cm: '', notes: '', photo_front: null, photo_side: null, photo_back: null });
-            fetchData(); // Recarrega os gráficos e histórico
+            fetchData();
         } catch (error) {
             toast.error(error.response?.data?.message || 'Erro ao registar a medida.');
         } finally {
@@ -123,7 +118,6 @@ export default function Dashboard() {
                         <div>
                             <h1 className={styles.heroTitle}>Evolução Clínica</h1>
                             <p className={styles.heroSubtitle}>Visão geral do teu progresso e acompanhamento.</p>
-                            {/* BOTÃO ATIVO NOVAMENTE */}
                             <button className={styles.btnPrimary} style={{ marginTop: '1.5rem' }} onClick={() => setIsModalOpen(true)}>
                                 <Plus size={16} /> Registar Nova Medida
                             </button>
@@ -133,8 +127,6 @@ export default function Dashboard() {
                         </div>
                     </motion.div>
 
-                    {/* ... (Todo o resto do teu Grid: KPIs, Grafico, Histórico, Marketplace ficam AQUI exatamente como estavam no passo anterior) ... */}
-                    {/* SÓ CORTADO AQUI POR LIMITES DE ESPAÇO, COPIA DO CÓDIGO ANTERIOR! */}
                     <motion.div variants={itemVariants} className={`${styles.card} ${styles.kpiBlock}`}>
                         <div className={styles.cardTitle}><Scale size={16} color="var(--primary-aluno)" /> Peso Atual</div>
                         <div className={styles.kpiValue}>{data.overview?.peso_atual}</div>
@@ -151,7 +143,7 @@ export default function Dashboard() {
 
                     <motion.div variants={itemVariants} className={`${styles.card} ${styles.kpiBlock}`}>
                         <div className={styles.cardTitle}><Briefcase size={16} color="var(--primary-prof)" /> Acompanhamento</div>
-                        <div className={styles.kpiValue}>{data.activePlans.length || 0}</div>
+                        <div className={styles.kpiValue}>{data.activePlans?.length || 0}</div>
                         <div style={{ fontSize: '0.8rem', opacity: 0.5, marginTop: '0.5rem' }}>Planos Ativos</div>
                     </motion.div>
 
@@ -168,8 +160,8 @@ export default function Dashboard() {
                                 </defs>
 
                                 <XAxis
-                                    dataKey="id" // Usamos o ID único para separar os pontos fisicamente
-                                    tickFormatter={(value) => data.chart[value]?.name} // Mas escrevemos a DATA no eixo
+                                    dataKey="id" 
+                                    tickFormatter={(value) => data.chart[value]?.name} 
                                     stroke="var(--border)"
                                     tick={{ fill: 'var(--foreground)', fontSize: 11 }}
                                     tickLine={false}
@@ -185,10 +177,8 @@ export default function Dashboard() {
                                 />
 
                                 <Tooltip
-                                    // trigger="mousemove" garante que ele segue o rato ponto a ponto
                                     trigger="mousemove"
                                     contentStyle={{ backgroundColor: 'var(--card-bg)', border: '1px solid var(--border)', borderRadius: '6px' }}
-                                    // Formatamos o Tooltip para mostrar a data correta baseada no ponto atual
                                     labelFormatter={(value) => `Data: ${data.chart[value]?.name}`}
                                     itemStyle={{ color: 'var(--primary-aluno)', fontWeight: 'bold' }}
                                 />
@@ -201,7 +191,6 @@ export default function Dashboard() {
                                     fillOpacity={1}
                                     fill="url(#chartGradient)"
                                     activeDot={{ r: 6, strokeWidth: 0 }}
-                                    // Isso impede que o Recharts tente "adivinhar" pontos iguais
                                     connectNulls={true}
                                 />
                             </AreaChart>
@@ -219,7 +208,7 @@ export default function Dashboard() {
                                 <div
                                     key={item.id}
                                     className={styles.historyItem}
-                                    onClick={() => setSelectedHistory(item)} // Abre o modal com os dados deste item
+                                    onClick={() => setSelectedHistory(item)} 
                                 >
                                     <div>
                                         <div style={{ fontWeight: '600', fontFamily: 'monospace', fontSize: '1.1rem' }}>{item.peso} kg</div>
@@ -247,7 +236,13 @@ export default function Dashboard() {
                                                 {prof.role?.name || 'Profissional'}
                                             </p>
                                         </div>
-                                        <button className={styles.btnOutline}>Ver Perfil</button>
+                                        {/* <-- 3. AQUI ESTÁ A MÁGICA DO CLIQUE --> */}
+                                        <button 
+                                            className={styles.btnOutline}
+                                            onClick={() => router.push(`/profissionais/${prof.id}`)}
+                                        >
+                                            Ver Perfil
+                                        </button>
                                     </div>
                                 ))
                             ) : (
@@ -259,7 +254,7 @@ export default function Dashboard() {
                 </motion.div>
             </div>
 
-            {/* O MODAL ANIMADO */}
+            {/* O MODAL ANIMADO DE NOVA AVALIAÇÃO */}
             <AnimatePresence>
                 {isModalOpen && (
                     <motion.div
@@ -279,8 +274,6 @@ export default function Dashboard() {
                             </div>
 
                             <form onSubmit={submitMeasurement}>
-
-                                {/* LINHA 1: PESO (Único Obrigatório) */}
                                 <div className={styles.inputGroup}>
                                     <label>Peso Atual (kg) *</label>
                                     <input type="number" step="0.1" required className={styles.inputField} placeholder="Ex: 80.5"
@@ -288,7 +281,6 @@ export default function Dashboard() {
                                     />
                                 </div>
 
-                                {/* LINHA 2: CIRCUNFERÊNCIAS (3 Colunas) */}
                                 <div className={styles.modalGrid3}>
                                     <div className={styles.inputGroup} style={{ marginBottom: 0 }}>
                                         <label>Cintura (cm)</label>
@@ -309,7 +301,6 @@ export default function Dashboard() {
 
                                 <hr style={{ border: 'none', borderTop: '1px solid var(--border)', margin: '1.5rem 0' }} />
 
-                                {/* LINHA 3: FOTOS DE EVOLUÇÃO */}
                                 <h4 style={{ fontSize: '0.9rem', marginBottom: '1rem', opacity: 0.8 }}>Fotos de Evolução (Max 5MB)</h4>
                                 <div className={styles.modalGrid3}>
                                     <div className={styles.inputGroup}>
@@ -328,7 +319,6 @@ export default function Dashboard() {
 
                                 <hr style={{ border: 'none', borderTop: '1px solid var(--border)', margin: '0.5rem 0 1.5rem 0' }} />
 
-                                {/* LINHA 4: NOTAS */}
                                 <div className={styles.inputGroup}>
                                     <label>Anotações do Treino/Dieta</label>
                                     <textarea className={styles.textareaField} placeholder="Como te sentiste esta semana?"
@@ -340,7 +330,6 @@ export default function Dashboard() {
                                     <button type="button" className={styles.btnOutline} style={{ flex: 1 }} onClick={() => setIsModalOpen(false)}>Cancelar</button>
                                     <button type="submit" className={styles.btnPrimary} style={{ flex: 2, justifyContent: 'center' }}>Guardar Registo Completo</button>
                                 </div>
-
                             </form>
                         </motion.div>
                     </motion.div>
@@ -353,13 +342,13 @@ export default function Dashboard() {
                     <motion.div
                         className={styles.modalOverlay}
                         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                        onClick={() => setSelectedHistory(null)} // Clicar fora fecha o modal
+                        onClick={() => setSelectedHistory(null)}
                     >
                         <motion.div
                             className={styles.modalContent}
-                            style={{ maxWidth: '600px' }} // Largo para caberem as fotos lado a lado
+                            style={{ maxWidth: '600px' }} 
                             initial={{ scale: 0.95, y: 10 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 10 }}
-                            onClick={(e) => e.stopPropagation()} // Impede que o clique dentro feche o modal
+                            onClick={(e) => e.stopPropagation()} 
                         >
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2rem', alignItems: 'center' }}>
                                 <div>
@@ -373,7 +362,6 @@ export default function Dashboard() {
                                 </button>
                             </div>
 
-                            {/* Grelha de Medidas */}
                             <div className={styles.modalGrid3}>
                                 <div>
                                     <div className={styles.detailLabel}>Peso</div>
@@ -399,7 +387,6 @@ export default function Dashboard() {
                                 )}
                             </div>
 
-                            {/* Notas */}
                             {selectedHistory.notes && (
                                 <div style={{ marginBottom: '1.5rem', padding: '1rem', backgroundColor: 'var(--background)', borderRadius: '8px', border: '1px solid var(--border)' }}>
                                     <div className={styles.detailLabel}>Anotações do Treino/Dieta</div>
@@ -407,7 +394,6 @@ export default function Dashboard() {
                                 </div>
                             )}
 
-                            {/* Grelha de Fotos */}
                             {(selectedHistory.photo_front_path || selectedHistory.photo_side_path || selectedHistory.photo_back_path) && (
                                 <>
                                     <hr style={{ border: 'none', borderTop: '1px solid var(--border)', margin: '1.5rem 0' }} />
@@ -431,7 +417,6 @@ export default function Dashboard() {
                                     </div>
                                 </>
                             )}
-
                         </motion.div>
                     </motion.div>
                 )}

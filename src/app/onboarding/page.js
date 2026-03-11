@@ -8,7 +8,7 @@ import styles from './onboarding.module.css';
 
 export default function OnboardingPage() {
   const router = useRouter();
-  
+
   // Estado para guardar a role vinda do cadastro (cliente, nutricionista, personal)
   const [userRole, setUserRole] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -104,18 +104,18 @@ export default function OnboardingPage() {
           objetivo: formData.objetivo
         };
         await api.post('/perfil/paciente', payloadCliente);
-      
+
       } else {
         // --- PAYLOAD DO PROFISSIONAL ---
         const payloadProfissional = {
-          "CRN/CREF": formData.registroProfissional, // Chave exata que a API pede
+          registro_profissional: formData.registroProfissional,
           bio: formData.bio
         };
         await api.post('/perfil/profissional', payloadProfissional);
       }
 
       toast.success('Perfil configurado com sucesso!');
-      
+
       // Limpa a role temporária e envia para o login
       localStorage.removeItem('@app-temp-role');
       router.push('/login');
@@ -137,36 +137,36 @@ export default function OnboardingPage() {
         <header>
           <h1 className={styles.title}>Complete o seu Perfil</h1>
           <p className={styles.subtitle}>
-            {isProfessional 
-              ? 'Falta pouco! Insira os seus dados profissionais.' 
+            {isProfessional
+              ? 'Falta pouco! Insira os seus dados profissionais.'
               : 'Queremos conhecer-te melhor para personalizar a experiência.'}
           </p>
         </header>
-        
+
         <form onSubmit={handleSubmit}>
-          
+
           {/* --- ÁREA ESPECÍFICA: CLIENTE --- */}
           {!isProfessional && (
             <>
               <div className={styles.formGroup}>
                 <label className={styles.label}>Data de Nascimento</label>
-                <input 
-                  type="date" 
-                  name="nascimento" 
+                <input
+                  type="date"
+                  name="nascimento"
                   className={`${styles.input} ${themeClass}`}
                   value={formData.nascimento}
-                  onChange={handleChange} 
-                  required 
+                  onChange={handleChange}
+                  required
                 />
               </div>
 
               <div className={styles.formGroup}>
                 <label className={styles.label}>Gênero</label>
-                <select 
-                  name="genero" 
+                <select
+                  name="genero"
                   className={`${styles.select} ${themeClass}`}
-                  value={formData.genero} 
-                  onChange={handleChange} 
+                  value={formData.genero}
+                  onChange={handleChange}
                   required
                 >
                   <option value="">Selecione...</option>
@@ -179,14 +179,14 @@ export default function OnboardingPage() {
               <div className={styles.row}>
                 <div className={`${styles.formGroup} ${styles.col}`}>
                   <label className={styles.label}>Altura (m)</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     inputMode="decimal"
                     placeholder="1.75"
-                    name="altura" 
+                    name="altura"
                     className={`${styles.input} ${themeClass}`}
                     value={formData.altura}
-                    onChange={handleChange} 
+                    onChange={handleChange}
                     required
                   />
                   {alturaError && (
@@ -195,14 +195,14 @@ export default function OnboardingPage() {
                 </div>
                 <div className={`${styles.formGroup} ${styles.col}`}>
                   <label className={styles.label}>Peso (kg)</label>
-                  <input 
-                    type="number" 
-                    step="0.1" 
+                  <input
+                    type="number"
+                    step="0.1"
                     placeholder="80.5"
-                    name="peso" 
+                    name="peso"
                     className={`${styles.input} ${themeClass}`}
                     value={formData.peso}
-                    onChange={handleChange} 
+                    onChange={handleChange}
                     required
                   />
                 </div>
@@ -210,7 +210,7 @@ export default function OnboardingPage() {
 
               <div className={styles.formGroup}>
                 <label className={styles.label}>Qual o seu objetivo principal?</label>
-                <select 
+                <select
                   name="objetivo"
                   className={`${styles.select} ${themeClass}`}
                   value={formData.objetivo}
@@ -232,33 +232,33 @@ export default function OnboardingPage() {
                 <label className={styles.label}>
                   Número do {userRole === 'nutricionista' ? 'CRN' : 'CREF'}
                 </label>
-                <input 
-                  type="text" 
-                  name="registroProfissional" 
+                <input
+                  type="text"
+                  name="registroProfissional"
                   placeholder={userRole === 'nutricionista' ? 'Ex: CRN-3 12345' : 'Ex: 123456-G/SP'}
                   className={`${styles.input} ${themeClass}`}
                   value={formData.registroProfissional}
-                  onChange={handleChange} 
+                  onChange={handleChange}
                   required
                 />
               </div>
 
               <div className={styles.formGroup}>
                 <label className={styles.label}>Biografia Curta</label>
-                <textarea 
-                  name="bio" 
+                <textarea
+                  name="bio"
                   placeholder="Especialista em nutrição esportiva e alto rendimento..."
                   className={`${styles.textarea} ${themeClass}`}
                   value={formData.bio}
-                  onChange={handleChange} 
+                  onChange={handleChange}
                   required
                 />
               </div>
             </>
           )}
 
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className={`${styles.button} ${buttonClass}`}
             disabled={loading}
           >

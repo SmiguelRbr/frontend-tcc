@@ -33,16 +33,43 @@ export default function Login() {
         try {
             const response = await api.post('/login', formData);
 
-            localStorage.setItem('@app-token', response.data.token);
+            // DEBUG: Vê no F12 exatamente o que o Laravel mandou de volta!
+            console.log('Login com sucesso, dados recebidos:', response.data);
+
+            // 1. Guardar o Token
+            if (response.data.token) {
+                localStorage.setItem('@app-token', response.data.token);
+            }
+
+            // 2. Guardar o ID de forma segura (Tenta buscar dentro de user, ou direto na raiz)
+            const userId = response.data.user?.id || response.data.id;
+            if (userId) {
+                localStorage.setItem('@user-id', userId);
+            }
+            
+            // 3. Guardar a role de forma segura
+            const roleName = response.data.user?.role?.name;
+            if (roleName) {
+                // Agora ele vai guardar "nutricionista" ou "paciente" em vez de [object Object]
+                localStorage.setItem('@user-role', roleName); 
+            }
 
             toast.success('Bem-vindo de volta!');
-            console.log('Login realizado com sucesso:', response.data);
 
-            // Lógica de sucesso (ex: salvar token no localStorage/cookies)
-
-            router.push('/dashboard');
+            // 4. O REDIRECIONAMENTO INTELIGENTE
+            if (roleName === 'nutricionista' || roleName === 'personal') { 
+                router.push('/profissional/dashboard');
+            } else if (roleName === 'cliente' || roleName === 'paciente') { 
+                router.push('/dashboard');
+            } else {
+                console.warn('Role não reconhecida no redirecionamento:', roleName);
+                router.push('/dashboard');
+            }
 
         } catch (error) {
+            // DEBUG: Isto vai-nos dizer exatamente porque falhou!
+            console.error('ERRO DETALHADO NO LOGIN:', error);
+
             if (error.response?.status === 422 && error.response.data.errors) {
                 const validationErrors = error.response.data.errors;
                 for (const field in validationErrors) {
@@ -51,7 +78,8 @@ export default function Login() {
                     });
                 }
             }
-            else if (error.response?.status === 401) {
+            // ATENÇÃO: Adicionei o 401, que é o padrão do Laravel para credenciais erradas
+            else if (error.response?.status === 401 || error.response?.status === 403) {
                 toast.error('E-mail ou senha incorretos.');
             }
             else {
