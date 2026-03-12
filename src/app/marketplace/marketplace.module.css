@@ -1,0 +1,181 @@
+/* src/app/marketplace/marketplace.module.css */
+
+.wrapper {
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--background);
+  padding: 3rem 1rem;
+  /* A variável --theme-color será injetada pelo React! */
+}
+
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  color: var(--foreground);
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.header h1 {
+  font-size: 2.2rem;
+  margin: 0 0 0.5rem 0;
+}
+
+.header p {
+  opacity: 0.6;
+  margin: 0;
+}
+
+/* Barra de Pesquisa Empresarial */
+.searchContainer {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2.5rem;
+}
+
+.searchInput {
+  width: 100%;
+  max-width: 600px;
+  padding: 1rem 1.5rem;
+  font-size: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 4px; /* Cantos retos, muito mais sério */
+  background-color: var(--card-bg);
+  color: var(--foreground);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: var(--theme-color);
+  box-shadow: 0 0 0 3px rgba(128, 128, 128, 0.1);
+}
+
+/* Tabs mais limpas */
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.tabBtn {
+  background: transparent;
+  border: none;
+  color: var(--foreground);
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 0.8rem 1rem;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: all 0.2s;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px; /* Sobrepõe a borda da linha */
+}
+
+.tabBtn:hover { opacity: 0.8; }
+
+.tabActive {
+  opacity: 1;
+  color: var(--theme-color);
+  border-bottom: 2px solid var(--theme-color);
+}
+
+/* Grid de Profissionais */
+.profGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.profCard {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 4px; /* Cantos retos */
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.profCard:hover {
+  transform: translateY(-3px);
+  border-color: var(--theme-color);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+}
+
+.avatar {
+  width: 80px; height: 80px;
+  background-color: var(--background);
+  border: 1px solid var(--theme-color);
+  color: var(--theme-color);
+  border-radius: 4px; /* Avatar Quadrado estilo corporativo */
+  display: flex; justify-content: center; align-items: center;
+  font-size: 2.5rem; font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.profName { font-size: 1.2rem; font-weight: 700; margin: 0 0 0.2rem 0; }
+.profRole { 
+  font-size: 0.75rem; 
+  font-weight: 700; 
+  text-transform: uppercase; 
+  letter-spacing: 0.05em;
+  color: var(--theme-color); 
+  margin-bottom: 1rem; 
+}
+
+.btnPrimary {
+  width: 100%;
+  background-color: var(--theme-color);
+  color: white; border: none; padding: 0.8rem; border-radius: 4px;
+  font-weight: 600; cursor: pointer; margin-top: auto;
+  transition: opacity 0.2s;
+}
+
+.btnPrimary:hover { opacity: 0.9; }
+
+/* Feed de Dicas */
+.feedGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.postCard {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--theme-color); /* Borda lateral grossa (Estilo CRM) */
+  border-radius: 4px;
+  padding: 1.5rem;
+}
+
+.postHeader {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.postAvatar {
+  width: 40px; height: 40px;
+  background-color: var(--background);
+  border: 1px solid var(--theme-color);
+  border-radius: 4px;
+  display: flex; justify-content: center; align-items: center;
+  font-weight: 700; color: var(--theme-color);
+}
+
+.postCategory { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: var(--theme-color); margin-bottom: 0.4rem;}
+.postTitle { font-size: 1.2rem; font-weight: 700; margin: 0 0 0.5rem 0; }
+.postBody { font-size: 0.95rem; opacity: 0.8; line-height: 1.6; }

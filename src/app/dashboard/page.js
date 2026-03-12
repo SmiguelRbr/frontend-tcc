@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation'; // <-- 1. IMPORTAMOS O ROUTER AQUI
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { Scale, TrendingDown, Activity, Plus, Briefcase, ChevronRight, X } from 'lucide-react';
@@ -11,28 +11,26 @@ import styles from './dashboard.module.css';
 import Hero3D from '../components/Hero3D';
 
 export default function Dashboard() {
-    const router = useRouter(); // <-- 2. INICIALIZAMOS O ROUTER AQUI
+    const router = useRouter();
 
     const [loading, setLoading] = useState(true);
-    const [data, setData] = useState({ overview: null, chart: [], history: [], recommendations: [], activePlans: [] });
+    const [data, setData] = useState({ overview: null, chart: [], history: [], recommendations: [], activePlan: null });
 
-    // Estado do Modal e do Formulário
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [form, setForm] = useState({
         peso: '', waist_cm: '', hips_cm: '', chest_cm: '', notes: '',
         photo_front: null, photo_side: null, photo_back: null
     });
 
-    // Estado para o Modal de Detalhes do Histórico
     const [selectedHistory, setSelectedHistory] = useState(null);
 
     const fetchData = async () => {
         try {
-            const [evoRes, measRes, recRes, plansRes] = await Promise.all([
+            const [evoRes, measRes, recRes, planRes] = await Promise.all([
                 api.get('/dashboard/evolution'),
                 api.get('/measurements'),
                 api.get('/dashboard/recommendations').catch(() => ({ data: [] })),
-                api.get('/my-plan').catch(() => ({ data: [] })) // Mantive a tua correção aqui para /my-plan
+                api.get('/my-plan').catch(() => ({ data: null })) // Retorna null se der 404
             ]);
 
             const labels = evoRes.data.chart?.labels || [];
@@ -49,7 +47,7 @@ export default function Dashboard() {
                 chart: chartData,
                 history: measRes.data,
                 recommendations: recRes.data,
-                activePlans: plansRes.data
+                activePlan: planRes.data // Guardamos o objeto do plano
             });
         } catch (error) {
             console.error(error);
@@ -141,10 +139,24 @@ export default function Dashboard() {
                         <div style={{ fontSize: '0.8rem', opacity: 0.5, marginTop: '0.5rem' }}>Variação desde o início</div>
                     </motion.div>
 
-                    <motion.div variants={itemVariants} className={`${styles.card} ${styles.kpiBlock}`}>
-                        <div className={styles.cardTitle}><Briefcase size={16} color="var(--primary-prof)" /> Acompanhamento</div>
-                        <div className={styles.kpiValue}>{data.activePlans?.length || 0}</div>
-                        <div style={{ fontSize: '0.8rem', opacity: 0.5, marginTop: '0.5rem' }}>Planos Ativos</div>
+                    {/* BLOCO DO PLANO ATUALIZADO AQUI */}
+                    <motion.div variants={itemVariants} className={`${styles.card} ${styles.kpiBlock}`} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                        <div>
+                            <div className={styles.cardTitle}><Briefcase size={16} color="var(--primary-prof)" /> Meu Plano</div>
+                            <div style={{ fontSize: '1.2rem', fontWeight: 'bold', marginTop: '0.5rem' }}>
+                                {data.activePlan?.title || 'Nenhum plano ativo'}
+                            </div>
+                            <div style={{ fontSize: '0.8rem', opacity: 0.5, marginTop: '0.2rem', textTransform: 'capitalize' }}>
+                                {data.activePlan?.type || 'Aguardando envio'}
+                            </div>
+                        </div>
+                        <button
+                            className={styles.btnOutline}
+                            style={{ width: '100%', marginTop: '1rem', padding: '0.5rem', justifyContent: 'center' }}
+                            onClick={() => router.push('/dashboard/planos')}
+                        >
+                            Ver Todos os Planos
+                        </button>
                     </motion.div>
 
                     {/* GRÁFICO RECHARTS */}
@@ -160,8 +172,8 @@ export default function Dashboard() {
                                 </defs>
 
                                 <XAxis
-                                    dataKey="id" 
-                                    tickFormatter={(value) => data.chart[value]?.name} 
+                                    dataKey="id"
+                                    tickFormatter={(value) => data.chart[value]?.name}
                                     stroke="var(--border)"
                                     tick={{ fill: 'var(--foreground)', fontSize: 11 }}
                                     tickLine={false}
@@ -208,7 +220,7 @@ export default function Dashboard() {
                                 <div
                                     key={item.id}
                                     className={styles.historyItem}
-                                    onClick={() => setSelectedHistory(item)} 
+                                    onClick={() => setSelectedHistory(item)}
                                 >
                                     <div>
                                         <div style={{ fontWeight: '600', fontFamily: 'monospace', fontSize: '1.1rem' }}>{item.peso} kg</div>
@@ -224,7 +236,16 @@ export default function Dashboard() {
 
                     {/* MARKETPLACE RECOMENDAÇÕES */}
                     <motion.div variants={itemVariants} className={`${styles.card} ${styles.fullBlock}`}>
-                        <div className={styles.cardTitle}>Profissionais Recomendados</div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                            <div className={styles.cardTitle} style={{ marginBottom: 0 }}>Profissionais Recomendados</div>
+                            <button
+                                className={styles.btnOutline}
+                                style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}
+                                onClick={() => router.push('/marketplace')}
+                            >
+                                Ver Todos
+                            </button>
+                        </div>
                         <div className={styles.profGrid}>
                             {data.recommendations.length > 0 ? (
                                 data.recommendations.map(prof => (
@@ -236,8 +257,7 @@ export default function Dashboard() {
                                                 {prof.role?.name || 'Profissional'}
                                             </p>
                                         </div>
-                                        {/* <-- 3. AQUI ESTÁ A MÁGICA DO CLIQUE --> */}
-                                        <button 
+                                        <button
                                             className={styles.btnOutline}
                                             onClick={() => router.push(`/profissionais/${prof.id}`)}
                                         >
@@ -254,7 +274,7 @@ export default function Dashboard() {
                 </motion.div>
             </div>
 
-            {/* O MODAL ANIMADO DE NOVA AVALIAÇÃO */}
+            {/* MODAL NOVA AVALIAÇÃO */}
             <AnimatePresence>
                 {isModalOpen && (
                     <motion.div
@@ -336,7 +356,7 @@ export default function Dashboard() {
                 )}
             </AnimatePresence>
 
-            {/* MODAL DE DETALHES DO HISTÓRICO */}
+            {/* MODAL HISTÓRICO */}
             <AnimatePresence>
                 {selectedHistory && (
                     <motion.div
@@ -346,9 +366,9 @@ export default function Dashboard() {
                     >
                         <motion.div
                             className={styles.modalContent}
-                            style={{ maxWidth: '600px' }} 
+                            style={{ maxWidth: '600px' }}
                             initial={{ scale: 0.95, y: 10 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 10 }}
-                            onClick={(e) => e.stopPropagation()} 
+                            onClick={(e) => e.stopPropagation()}
                         >
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2rem', alignItems: 'center' }}>
                                 <div>

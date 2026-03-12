@@ -11,12 +11,12 @@ import Hero3D from '@/app/components/Hero3D';
 
 export default function ProfissionalDashboard() {
     const router = useRouter();
-    
+
     // --- ESTADOS DO MODAL E LOADING ---
     const [isContentModalOpen, setIsContentModalOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false); // NOVO: Protege contra cliques duplos!
     const [contentForm, setContentForm] = useState({ title: '', category: '', body: '' });
-    
+
     // --- ESTADOS DOS DADOS ---
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState({
@@ -42,7 +42,7 @@ export default function ProfissionalDashboard() {
             const [pacientesRes, contratosRes, contentsRes] = await Promise.all([
                 api.get('/pacientes'),
                 api.get('/contracts/requests').catch(() => ({ data: [] })), // <--- A ROTA CORRETA
-                api.get(`/profissionais/${userId}/contents`).catch(() => ({ data: [] })) 
+                api.get(`/profissionais/${userId}/contents`).catch(() => ({ data: [] }))
             ]);
 
             const alunos = pacientesRes.data || [];
@@ -52,7 +52,7 @@ export default function ProfissionalDashboard() {
             setData({
                 activeStudents: alunos,
                 pendingContracts: pendentes,
-                contents: dicas, 
+                contents: dicas,
                 overview: {
                     total_alunos: alunos.length,
                     pendentes: pendentes.length
@@ -71,10 +71,10 @@ export default function ProfissionalDashboard() {
     // --- LÓGICA DE CRIAR DICA (COM PROTEÇÃO) ---
     const handleContentSubmit = async (e) => {
         e.preventDefault();
-        
+
         // Se já estiver a enviar, bloqueia a função e não faz nada
-        if (isSubmitting) return; 
-        
+        if (isSubmitting) return;
+
         setIsSubmitting(true); // Bloqueia o botão
 
         try {
@@ -95,7 +95,7 @@ export default function ProfissionalDashboard() {
         try {
             await api.patch(`/contracts/${contractId}/accept`);
             toast.success('Aluno aceite com sucesso!');
-            fetchData(); 
+            fetchData();
         } catch (error) {
             toast.error(error.response?.data?.message || 'Erro ao aceitar contrato.');
         }
@@ -129,6 +129,13 @@ export default function ProfissionalDashboard() {
                         <div style={{ zIndex: 2, position: 'relative' }}>
                             <h1 className={styles.heroTitle}>Painel de Gestão</h1>
                             <p className={styles.heroSubtitle}>Acompanha os teus alunos e gere novas solicitações.</p>
+                            <button
+                                className={styles.btnOutline}
+                                style={{ marginTop: '1rem', borderColor: 'white', color: 'white' }}
+                                onClick={() => router.push('/marketplace')}
+                            >
+                                Explorar Marketplace
+                            </button>
                         </div>
                     </motion.div>
 
@@ -231,19 +238,19 @@ export default function ProfissionalDashboard() {
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
                             {data.contents.length > 0 ? (
                                 data.contents.map(dica => (
-                                    <div key={dica.id} style={{ 
-                                        padding: '1.5rem', 
-                                        border: '1px solid var(--border)', 
-                                        borderRadius: '8px', 
-                                        backgroundColor: 'var(--background)' 
+                                    <div key={dica.id} style={{
+                                        padding: '1.5rem',
+                                        border: '1px solid var(--border)',
+                                        borderRadius: '8px',
+                                        backgroundColor: 'var(--background)'
                                     }}>
                                         <div style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--primary-prof)', marginBottom: '0.5rem' }}>
                                             {dica.category}
                                         </div>
                                         <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '1.1rem' }}>{dica.title}</h4>
-                                        <p style={{ 
-                                            margin: 0, fontSize: '0.9rem', opacity: 0.7, 
-                                            display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' 
+                                        <p style={{
+                                            margin: 0, fontSize: '0.9rem', opacity: 0.7,
+                                            display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden'
                                         }}>
                                             {dica.body}
                                         </p>

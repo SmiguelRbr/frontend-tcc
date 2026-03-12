@@ -1,0 +1,159 @@
+/* src/app/dashboard/planos/planos.module.css */
+
+.wrapper {
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--background);
+  padding: 3rem 1rem;
+}
+
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  color: var(--foreground);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+  padding: 2rem;
+  border-radius: 4px;
+  margin-bottom: 2rem;
+}
+
+.headerInfo h1 { margin: 0 0 0.5rem 0; font-size: 1.8rem; }
+.headerInfo p { margin: 0; opacity: 0.6; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--primary-aluno);
+  border-radius: 4px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.cardHeader {
+  display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;
+}
+
+.badge {
+  padding: 0.2rem 0.6rem; border-radius: 2px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: #fff;
+}
+.badgeActive { background-color: var(--primary-aluno); }
+.badgeInactive { background-color: #6b7280; }
+
+.planTitle { font-size: 1.2rem; font-weight: 600; margin: 0 0 0.5rem 0; }
+.planProf { font-size: 0.85rem; opacity: 0.7; display: flex; align-items: center; gap: 0.4rem; margin-bottom: 1rem; }
+
+/* --- MODAL ESTILO DOCUMENTO (A4) --- */
+.modalOverlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex; justify-content: center; align-items: flex-start;
+  z-index: 50; padding: 2rem 1rem; overflow-y: auto;
+}
+
+/* Barra de ferramentas flutuante */
+.modalToolbar {
+  position: sticky; top: 0;
+  background-color: var(--card-bg);
+  padding: 1rem 2rem;
+  display: flex; justify-content: space-between; align-items: center;
+  border-bottom: 1px solid var(--border);
+  z-index: 10;
+}
+
+/* O "Papel" */
+.modalContent {
+  background-color: var(--card-bg);
+  border-radius: 4px;
+  width: 100%; max-width: 850px; 
+  margin: auto;
+  position: relative;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+.documentHeader {
+  padding: 3rem;
+  border-bottom: 2px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+}
+
+.docTitle { font-size: 2rem; margin: 0; text-transform: uppercase; letter-spacing: 2px; }
+.docSubtitle { font-size: 0.9rem; opacity: 0.6; text-transform: uppercase; letter-spacing: 1px; margin-top: 0.5rem; }
+
+.docMeta { text-align: right; font-size: 0.9rem; opacity: 0.8; line-height: 1.6; }
+
+.documentBody { padding: 3rem; }
+
+.docDescription {
+  background-color: var(--background);
+  padding: 1.5rem; border-left: 3px solid var(--primary-aluno);
+  margin-bottom: 2.5rem; font-size: 0.95rem; line-height: 1.6;
+}
+
+/* Tabela Formal para PDF */
+.docTable {
+  width: 100%; border-collapse: collapse; margin-bottom: 4rem;
+}
+
+.docTable th {
+  text-align: left; padding: 1rem;
+  background-color: var(--background);
+  border-bottom: 2px solid var(--border);
+  font-weight: 700; text-transform: uppercase; font-size: 0.8rem; opacity: 0.8;
+}
+
+.docTable td {
+  padding: 1.2rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.95rem;
+}
+
+/* Assinatura */
+.signatureBlock {
+  width: 250px; margin-left: auto; text-align: center; margin-top: 3rem;
+}
+
+.signatureLine { border-top: 1px solid var(--foreground); margin-bottom: 0.5rem; opacity: 0.5; }
+
+.btnAction {
+  display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem;
+  background-color: var(--primary-aluno); color: white; border: none; border-radius: 4px;
+  cursor: pointer; font-weight: 600; font-size: 0.9rem;
+}
+
+.btnActionOutline {
+  background: transparent; color: var(--foreground); border: none; cursor: pointer; opacity: 0.6;
+}
+
+/* --- MAGIA DO PDF / IMPRESSÃO --- */
+@media print {
+  body * { visibility: hidden; } /* Esconde tudo na tela */
+  .modalContent, .modalContent * { visibility: visible; } /* Mostra só o documento */
+  .modalContent { 
+    position: absolute; left: 0; top: 0; width: 100%; max-width: 100%;
+    box-shadow: none; border: none; background: white; color: black;
+  }
+  .modalToolbar { display: none; } /* Esconde os botões no PDF */
+  .docTable th { background-color: #f3f4f6; color: black; border-color: #d1d5db; }
+  .docTable td { border-color: #e5e7eb; }
+  .docDescription { background-color: #f9fafb; border-color: #10b981; }
+}
