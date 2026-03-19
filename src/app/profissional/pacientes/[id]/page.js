@@ -83,7 +83,36 @@ export default function StudentDetail() {
         }
     };
 
-    if (loading) return <div className={styles.wrapper} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Carregando dados...</div>;
+     if (loading) {
+        return (
+            <div className={styles.wrapper} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+                <motion.div
+                    // A animação de "piscar/respirar" (vai de 30% a 100% de opacidade e aumenta um pouquinho)
+                    animate={{ 
+                        opacity: [0.3, 1, 0.3], 
+                        scale: [0.9, 1.05, 0.9] 
+                    }}
+                    transition={{
+                        duration: 1.5,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                    }}
+                    style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center'
+                    }}
+                >
+                    <img 
+                        src="/Grovy-removebg-preview.png" 
+                        alt="A carregar o Grovy..." 
+                        style={{ width: '150px', height: '150px', objectFit: 'contain' }} 
+                        onError={(e) => e.target.style.display = 'none'} 
+                    />
+                </motion.div>
+            </div>
+        );
+    }
     if (!student) return null;
 
     return (
