@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft, Plus, X, Trash2 } from 'lucide-react';
+import { motion } from 'framer-motion'; // <-- A IMPORTAÇÃO QUE FALTA
 import { toast } from 'react-toastify';
 import api from '@/app/services/api';
 import styles from './patient.module.css';

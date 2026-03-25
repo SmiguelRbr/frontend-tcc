@@ -67,12 +67,6 @@ export default function CadastroPage() {
 
   return (
     <div className={styles.container}>
-      <button 
-        onClick={toggleTheme} 
-        style={{ position: 'absolute', top: 20, right: 20, padding: '10px' }}
-      >
-        Mudar para Tema {theme === 'dark' ? 'Claro' : 'Escuro'}
-      </button>
 
       <div className={styles.card}>
         <header>
